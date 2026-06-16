@@ -1,0 +1,30 @@
+name: Global Macro Intelligence Radar
+
+on:
+  schedule:
+    # 🌟 每 30 分钟自动运行一次（国际标准时间，可自由调节）
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # 支持手动点击按钮立刻触发测试
+
+jobs:
+  run-radar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests beautifulsoup4 google-generativeai
+
+      - name: Execute Radar Core
+        env:
+          # 🌟 安全核心：从 GitHub 仓库的安全隐私锁里读取密钥
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PUBLISH_WEBHOOK_URL: ${{ secrets.PUBLISH_WEBHOOK_URL }}
+        run: python radar.py
