@@ -23,8 +23,9 @@ def run_radar():
     urls = {
         "CNBC_Economy": {"type": "html", "url": "https://www.cnbc.com/economy/"},
         "Yahoo_Finance_Macro": {"type": "html", "url": "https://finance.yahoo.com/topic/economic-news/"},
-        "Reuters_Macro_RSS": {"type": "rss", "url": "https://www.reutersagency.com/feed/?best-topics=business-finance&paged=1"},
-        "WSJ_Economy_RSS": {"type": "rss", "url": "https://feeds.a.dj.com/rss/WSJEconomy.xml"}
+        "Reuters_Financial": {"type": "html", "url": "https://www.reuters.com/markets/"},
+        "WallStreet_CN": {"type": "html", "url": "https://wallstreetcn.com/news/global"},
+        "MarketWatch_Macro": {"type": "html", "url": "https://www.marketwatch.com/economy-politics?mod=top_nav"}
     }
 
     combined_text = ""
@@ -48,7 +49,7 @@ def run_radar():
                 page_text = " ".join([p.get_text() for p in soup.find_all(['h1', 'h2', 'h3', 'p'])])
                 cleaned = " ".join(page_text.split())[:3500]
             
-            # 路由 B：高级 RSS XML 绿色通道解析（秒杀路透、WSJ的403墙）
+            # 路由 B：高级 RSS XML 绿色通道解析
             else:
                 root = ET.fromstring(res.content)
                 rss_items = []
@@ -100,14 +101,14 @@ def run_radar():
             title = news.get("title", "未命名重磅新闻")
             src = news.get("source", "未知全球媒体")
             
-            if score >= 5.0: # 门槛线
+            if score >= 6.0: # 门槛线
                 print(f"🔥 [高能预警] 发现重磅情报《{title}》(打分: {score}) 正在冲锋推送至 Make...")
                 payload = {
                     "source": src,
                     "title": title,
                     "score": score,
                     "summary": news.get("summary", "无摘要"),
-                    "origin_url": "[https://www.wsj.com](https://www.wsj.com)" if "WSJ" in src else "[https://www.reuters.com](https://www.reuters.com)" if "Reuters" in src else "[https://finance.yahoo.com](https://finance.yahoo.com)"
+                    "origin_url": "[https://wallstreetcn.com](https://wallstreetcn.com)" if "WallStreet" in src else "[https://www.reuters.com](https://www.reuters.com)" if "Reuters" in src else "[https://www.marketwatch.com](https://www.marketwatch.com)" if "MarketWatch" in src else "[https://finance.yahoo.com](https://finance.yahoo.com)"
                 }
                 post_res = requests.post(webhook_url, json=payload, headers={"Content-Type": "application/json"})
                 print(f"🚀 [推送状态] Make 接收反馈码: {post_res.status_code}")
