@@ -1,7 +1,7 @@
 name: Global Macro Radar
 
 on:
-  workflow_dispatch: # 保持长官随时手动手动拉闸控制
+  workflow_dispatch: # 保持随时手动拉闸控制
 
 jobs:
   build-and-send:
@@ -12,12 +12,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. 安装 Python 环境
+    # 2. 安装 Python 环境（已修正语法冲突）
     - name: Set up Python
-      uses: actions/configure-pages@v3 # 借用官方标准容器
       uses: actions/setup-python@v4
       with:
-        python-with: '3.10'
+        python-version: '3.10'
 
     # 3. 安装爬虫及 AI 依赖
     - name: Install dependencies
@@ -31,16 +30,15 @@ jobs:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: python radar.py
 
-    # 5. 🌟 终极闭环：GitHub Actions 官方直接把文件里的长信发到你的 Gmail
+    # 5. 终极闭环：GitHub Actions 官方直接把文件里的长信发到你的 Gmail
     - name: Send Summary Email
       uses: dawidd6/action-send-mail@v3
       with:
-        # 这里配置发送方（借用你的 Gmail 通道或者任何标准的 SMTP）
         server_address: smtp.gmail.com
         server_port: 465
         username: ${{ secrets.MAIL_USERNAME }}  # 你的 Gmail 邮箱账号
-        password: ${{ secrets.MAIL_PASSWORD }}  # 你的 Gmail 独立应用密码（App Password）
+        password: ${{ secrets.MAIL_PASSWORD }}  # 你的 16 位谷歌应用密码
         subject: 【高管决策内参】全球经贸多源并网雷达日报
-        to: yongren2001@gmail.com               # 接收方，依然是你的主邮箱
+        to: yongren2001@gmail.com               # 接收方邮箱
         from: Global Radar AI
         html_body: file://email_content.html    # 核心：直接把拼好的本地整长信倒灌发送
