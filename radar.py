@@ -6,7 +6,7 @@ import time
 import random
 
 def run_radar():
-    print("🚀 [雷达启动] 正在初始化全球智库终极稳健版（守住果实，精准换轨）...")
+    print("🚀 [雷达启动] 正在初始化全球智库终极稳健版...")
     
     gemini_key = os.environ.get("GEMINI_API_KEY")
     if not gemini_key:
@@ -16,22 +16,18 @@ def run_radar():
     genai.configure(api_key=gemini_key)
     model = genai.GenerativeModel('gemini-2.5-flash')
 
-    # 高阶深度伪装头（固化 CNBC 与华尔街的成功要素）
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
-        "Sec-Ch-Ua": '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-        "Sec-Ch-Ua-Platform": '"Windows"',
         "Connection": "keep-alive"
     }
 
     combined_text = ""
 
     # ==========================================
-    # 🏅 战果固化 1：华尔街见闻核心 API 管道（不动）
+    # 🏅 华尔街见闻核心 API 
     # ==========================================
-    print("📡 [专属管道] 正在直连华尔街见闻原生数据流 API...")
     try:
         wscn_api = "https://api-prod.wallstreetcn.com/apiv1/content/fabric/articles?channel=global&limit=10"
         res = requests.get(wscn_api, headers=headers, timeout=15)
@@ -47,9 +43,8 @@ def run_radar():
         print(f"⚠️ [跳过] 华尔街见闻 API 异常: {e}")
 
     # ==========================================
-    # 🏅 战果固化 2：CNBC 全球经济版块（不动）
+    # 🏅 CNBC 全球经济版块
     # ==========================================
-    print("📡 [正在穿透] 目标堡垒: CNBC_Economy")
     try:
         res = requests.get("https://www.cnbc.com/economy/", headers=headers, timeout=20)
         if res.status_code == 200:
@@ -61,9 +56,8 @@ def run_radar():
         print(f"⚠️ [网络限制] CNBC 提取受阻: {e}")
 
     # ==========================================
-    # 🎯 精准换轨 3：Yahoo Finance 宏观总池（召回恢复）
+    # 🎯 Yahoo Finance 宏观总池
     # ==========================================
-    print("📡 [正在穿透] 目标堡垒: Yahoo_Finance_Macro")
     try:
         time.sleep(random.uniform(1.0, 2.0))
         res = requests.get("https://finance.yahoo.com/topic/economic-news/", headers=headers, timeout=20)
@@ -76,14 +70,10 @@ def run_radar():
         print(f"⚠️ [网络限制] Yahoo 恢复失败: {e}")
 
     # ==========================================
-    # 🎯 精准换轨 4：MarketWatch 免费开放 API 流（降级穿透）
+    # 🎯 MarketWatch 免费开放节点
     # ==========================================
-    print("📡 [专属管道] 正在直连 MarketWatch 免费头条实时 API...")
     try:
         time.sleep(random.uniform(1.0, 2.0))
-        # 避开 401 鉴权，直接抓取其对外公开披露的最新宏观快讯接口
-        mw_api = "https://www.marketwatch.com/api/content/realtime/latest?count=10&channel=macro"
-        # 如果标准 API 请求受阻，直接降级抓取其完全无付费墙的头条主页
         res = requests.get("https://www.marketwatch.com/latest-news", headers=headers, timeout=15)
         if res.status_code == 200:
             soup = BeautifulSoup(res.text, 'html.parser')
@@ -94,39 +84,46 @@ def run_radar():
         print(f"⚠️ [网络限制] MarketWatch 降级管线受阻: {e}")
 
     # ==========================================
-    # 🧠 🧠 阶段三：单次打包递交决策脑（精打细算）
+    # 🧠 🧠 阶段三：安全流式架构（绝不在中途中断）
     # ==========================================
-    if len(combined_text) < 144:
-        print("❌ [终止] 有效原材料未达基准线，熔断本次调用以保护 Token。")
-        return
+    clean_html = ""
 
-    system_prompt = (
-        "你是一位专注于跨国供应链安全、地缘经贸博弈与产融结合方向的顶级首席经济学家。\n"
-        "请全盘析读以下由多源并网雷达高密度压缩后的英中文财经原材料。剔除垃圾广告，提取出真正具备战略震荡、会穿透到外贸关税、结汇汇率或大宗运输的重磅头条。\n"
-        "【极其严格的铁律】\n"
-        "1. 不要带有任何 ```html 等 Markdown 代码壳，直接输出最纯粹、能被邮件客户端完美解析的 HTML 正文代码。\n"
-        "2. 字数必须精练，直击要害。拒绝一切背景空话、套话、客套过渡句。将所有提炼出来的新闻合并在同一封信中输出。结构如下：\n"
-        "<h3>【高管决策内参 · 全球经贸雷达日报】</h3>\n"
-        "<hr>\n"
-        "<b>【重磅战略动向】中文核心标题</b> (情报源: xxx)<br>\n"
-        "<b>核心实质影响与产融研判：</b>120字内一针见血直接指出对供应链安全、关税政策或结汇层面的穿透性影响。<br>\n"
-        "<hr>"
-    )
+    if len(combined_text.strip()) < 100:
+        print("❌ [数据匮乏] 启动免额度保底防线...")
+        clean_html = (
+            "<h3>【高管决策内参 · 全球经贸雷达日报】</h3><hr>"
+            "<p style='color: #666;'>📢 今日全网主流财经智库交投清淡，未捕获到宏观战略动态，系统自动拦截无意义调用以保护您的 AI 额度。</p>"
+        )
+    else:
+        system_prompt = (
+            "你是一位专注于跨国供应链安全、地缘经幕博弈与产融结合方向的顶级首席经济学家。\n"
+            "请全盘析读以下由多源并网雷达高密度压缩后的英中文财经原材料。剔除垃圾广告，提取出真正具备战略震荡、会穿透到外贸关税、结汇汇率或大宗运输的重磅头条。\n"
+            "【极其严格的铁律】\n"
+            "不要带有任何 ```html 等 Markdown 代码壳，直接输出最纯粹、能被邮件客户端完美解析的 HTML 正文代码。结构如下：\n"
+            "<h3>【高管决策内参 · 全球经贸雷达日报】</h3><hr>\n"
+            "<b>【重磅战略动向】中文核心标题</b> (情报源: xxx)<br>\n"
+            "<b>核心实质影响与产融研判：</b>120字内一针见血直接指出对供应链安全、关税政策或结汇层面的穿透性影响。<br><hr>"
+        )
 
-    print("\n🤖 [大脑析读] 正在单次调阅 Gemini 首席经济学家（稳健突围版）...")
-    try:
-        prompt_payload = f"{system_prompt}\n\n【四源并网情报合集】\n{combined_text}"
-        response = model.generate_content(prompt_payload)
-        ai_output = response.text.strip()
-        
-        clean_html = ai_output.replace("```html", "").replace("```", "").strip()
-        
-        with open("email_content.html", "w", encoding="utf-8") as f:
-            f.write(clean_html)
-        print("✅ [本地打包完成] 全球经贸日报长信已高密度封印！")
+        print("\n🤖 [大脑析读] 正在单次调阅 Gemini 首席经济学家...")
+        try:
+            prompt_payload = f"{system_prompt}\n\n【四源并网情报合集】\n{combined_text}"
+            response = model.generate_content(prompt_payload)
+            ai_output = response.text.strip()
+            clean_html = ai_output.replace("```html", "").replace("```", "").strip()
+        except Exception as e:
+            # 🌟 绝杀性改动：即使在这里遭遇异常，也只做信息登记，绝不允许 return 退出！
+            print(f"❌ [智能体研判层异常]: {e}。启动防红仓紧急自救...")
+            clean_html = f"<h3>【高管决策内参】</h3><hr><p>今日智能体进行宏观深度研判时遭遇临时网络波折: {e}。请查阅下方未经提炼的抓取原生流：</p><br><pre>{combined_text[:600]}</pre>"
 
-    except Exception as e:
-        print(f"❌ [智能体研判异常]: {e}")
+    # ==========================================
+    # 💾 💾 阶段四：大坝死锁落盘（无视任何异常，100%必出货）
+    # ==========================================
+    print("💾 正在执行大坝合拢落盘机制...")
+    with open("email_content.html", "w", encoding="utf-8") as f:
+        f.write(clean_html)
+        f.flush()
+    print("✅ [出厂完毕] email_content.html 容器已百分之百锁死到磁盘中！")
 
 if __name__ == "__main__":
     run_radar()
