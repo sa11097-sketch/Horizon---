@@ -39,6 +39,6 @@ jobs:
         username: ${{ secrets.MAIL_USERNAME }}  # 你的 Gmail 邮箱账号
         password: ${{ secrets.MAIL_PASSWORD }}  # 你的 16 位谷歌应用密码
         subject: 【高管决策内参】全球经贸多源并网雷达日报
-        to: yongren2001@gmail.com               # 接收方邮箱
+        to: ${{ secrets.RECEIVER_EMAIL }}               # 接收方邮箱
         from: Global Radar AI
         html_body: file://email_content.html    # 核心：直接把拼好的本地整长信倒灌发送
